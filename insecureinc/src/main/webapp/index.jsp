@@ -16,13 +16,13 @@ body {
 
 .section{    
     padding-left: 75px;
-    min-height: 600px;
+    min-height: 88vh;
 }
 .section .p{
   font-size: 50px;
 }
 
-#about {color: #fff; text-shadow:2px 2px 5px darkslateblue; background-image: url('public/banner.jpg')}
+#about {color: #fff; text-shadow:2px 2px 5px darkslateblue; background-image: linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0.9)),url('public/skyscrapers.png')}
 
 .transparent {
     background-color: transparent;
@@ -89,10 +89,11 @@ body {
 </nav>    
 
 <div id="about" class="container-fluid section">
-    <div class="jumbotron transparent">
-        <h1>Welcome to Insecure Inc.</h1> 
-        <h2>This is a training site. You are authorized to complete the training challenges.
-         You are <strong>not</strong> authorized to conduct any disruptive testing or intentionally tamper 
+    <div class="jumbotron transparent" style="padding-top: 25%;">
+        <h1 style="color: snow;font-family: system-ui;font-size: 8rem;">Insecure Corporation.</h1>
+        <h2 style="font-size: 1.8rem;">This is a training site. </h2>
+        <h2 style="font-size: 1.8rem;">You are authorized to complete the training challenges. </h2>
+        <h2 style="font-size: 1.8rem;">You are <strong>not</strong> authorized to conduct any disruptive testing or intentionally tamper
         with the contents of this site. </h2>
         
     </div>

@@ -1,0 +1,104 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: training-portal-config
+  namespace: dojo
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-issuer
+data:
+  config.json: |
+    {
+        "dojoUrl" : "https://training.dojo.mantisec.com.au",
+        "moduleUrls" : {
+            "blackBelt":"https://target.dojo.mantisec.com.au",
+            "securityCodeReviewMaster":"/public/codereview101/?fromPortal",
+            "secondDegreeBlackBelt":  "https://target.dojo.mantisec.com.au",
+            "redTeam":  "https://target.dojo.mantisec.com.au",
+            "blueTeam": "https://target.dojo.mantisec.com.au"    
+        },
+        "localUsersPath" : "localUsers.json"
+    }
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: training-portal
+  namespace: dojo
+  labels:
+    app: training-portal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: training-portal
+  template:
+    metadata:
+      name: training-portal
+      labels:
+        app: training-portal
+    spec:
+      containers:
+        - name: training-portal
+          ports:
+            - containerPort: 8081
+          env:
+            - name: CHALLENGE_MASTER_SALT
+              value: "supersecretmastersalt"
+            - name: ENC_KEY
+              value: ""
+            - name: ENC_KEY_IV
+              value: ""
+            - name: DATA_DIR
+              value: "/dojofiles"
+          image: mantisec/trainingportal
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: training-portal-config-volume
+              mountPath: /dojofiles/config.json
+              subPath: config.json
+      volumes:
+        - name: training-portal-config-volume
+          configMap:
+            items:
+              - key: config.json
+                path: config.json
+            name: training-portal-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: training-portal-svc
+  namespace: dojo
+spec:
+  selector:
+    app: training-portal
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8081
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: training-portal-ing
+  namespace: dojo
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-issuer
+spec:
+  rules:
+    - host: training.dojo.mantisec.com.au
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: training-portal-svc
+                port:
+                  number: 80
+  tls:
+  - hosts:
+    - training.dojo.mantisec.com.au
+    secretName: training-dojo-cert

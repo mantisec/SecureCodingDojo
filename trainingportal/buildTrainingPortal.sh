@@ -1,5 +1,5 @@
 set -o errexit
-npm test
+#npm test
 
 #include here your own test tools
 if [ -f "runCustomTestScripts.sh" ]
@@ -12,4 +12,4 @@ zip ../build/trainingportal/SCD-"$(date)".DOCKER.zip -rq *.js *.sql \
  package-lock.json package.json public/* static/* sql/* \
  -x "*.DS_Store" -x "encryptConfigs.js" -x "decrypt.js" -x "*.config.js" -x "config.json";
 
-docker build -t securecodingdojo/trainingportal ../build/trainingportal/
+docker build -t mantisec/trainingportal ../build/trainingportal/

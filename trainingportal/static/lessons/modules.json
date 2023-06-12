@@ -1,6 +1,6 @@
 {
     "securityCodeReviewMaster":{
-        "name":"Security Code Review Ninja",
+        "name":"Secure Code Reviewer",
         "summary":"Integrating security into code review",
         "description":"Code review is, hopefully, part of regular development practices for any organization. Adding security elements to code review is the most effective measure in preventing vulnerabilities, even before the first commit.",
         "description2":"Includes 6 lessons. Estimated duration 15 minutes.",
