@@ -23,7 +23,7 @@ spec:
           env:
             - name: CHALLENGE_MASTER_SALT
               value: "supersecretmastersalt"
-          image: mantisec/insecure.inc
+          image: registry.mgt.dragonfly-managed.services/docker/mantisec/insecure.inc
           imagePullPolicy: IfNotPresent
       restartPolicy: Always
 ---
@@ -50,6 +50,16 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-issuer
 spec:
   rules:
+    - host: target.mantisec.online
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: training-target-svc
+                port:
+                  number: 80
     - host: target.dojo.mantisec.com.au
       http:
         paths:
@@ -63,5 +73,6 @@ spec:
 
   tls:
   - hosts:
+    - target.mantisec.online
     - target.dojo.mantisec.com.au
     secretName: target-dojo-cert

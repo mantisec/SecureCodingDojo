@@ -3,22 +3,35 @@ kind: ConfigMap
 metadata:
   name: training-portal-config
   namespace: dojo
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-issuer
 data:
   config.json: |
     {
-        "dojoUrl" : "https://training.dojo.mantisec.com.au",
+        "dojoUrl" : "https://training.mantisec.online",
         "moduleUrls" : {
-            "blackBelt":"https://target.dojo.mantisec.com.au",
+            "blackBelt":"https://target.mantisec.online",
             "securityCodeReviewMaster":"/public/codereview101/?fromPortal",
-            "secondDegreeBlackBelt":  "https://target.dojo.mantisec.com.au",
-            "redTeam":  "https://target.dojo.mantisec.com.au",
-            "blueTeam": "https://target.dojo.mantisec.com.au"    
+            "secondDegreeBlackBelt":  "https://target.mantisec.online",
+            "redTeam":  "https://target.mantisec.online",
+            "blueTeam": "https://target.mantisec.online"    
         },
         "localUsersPath" : "localUsers.json"
     }
-
+  dbconfig.json: |
+    {
+        "dojoUrl" : "https://training.mantisec.online",
+        "moduleUrls" : {
+            "blackBelt":"https://target.mantisec.online",
+            "securityCodeReviewMaster":"/public/codereview101/?fromPortal",
+            "secondDegreeBlackBelt":  "https://target.mantisec.online",
+            "redTeam":  "https://target.mantisec.online",
+            "blueTeam": "https://target.mantisec.online"    
+        },
+        "localUsersPath" : "localUsers.json",
+        "dbHost" : "training-mysql",
+        "dbName" : "dojo",
+        "dbUser" : "dojodbadmin",
+        "encDbPass":"pXAYtxLP+Knd1JRAg51jC/GU2ABM3lhgI0B9AQC7Oyw="
+    }
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -46,13 +59,13 @@ spec:
             - name: CHALLENGE_MASTER_SALT
               value: "supersecretmastersalt"
             - name: ENC_KEY
-              value: ""
+              value: "versatiledonkey"
             - name: ENC_KEY_IV
-              value: ""
+              value: "rabidporcupine"
             - name: DATA_DIR
               value: "/dojofiles"
-          image: mantisec/trainingportal
-          imagePullPolicy: IfNotPresent
+          image: registry.mgt.dragonfly-managed.services/docker/mantisec/trainingportal
+          imagePullPolicy: Always
           volumeMounts:
             - name: training-portal-config-volume
               mountPath: /dojofiles/config.json
@@ -61,7 +74,7 @@ spec:
         - name: training-portal-config-volume
           configMap:
             items:
-              - key: config.json
+              - key: dbconfig.json
                 path: config.json
             name: training-portal-config
 ---
@@ -88,6 +101,16 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-issuer
 spec:
   rules:
+    - host: training.mantisec.online
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: training-portal-svc
+                port:
+                  number: 80
     - host: training.dojo.mantisec.com.au
       http:
         paths:
@@ -100,5 +123,6 @@ spec:
                   number: 80
   tls:
   - hosts:
+    - training.mantisec.online
     - training.dojo.mantisec.com.au
     secretName: training-dojo-cert

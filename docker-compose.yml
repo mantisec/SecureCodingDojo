@@ -1,29 +1,42 @@
 version: "3.7"
 
 services:
+  training-mysql:
+    image: mysql:5.6
+    networks:
+      - portal
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=ljkDGlasn47kj235
+      - MYSQL_DATABASE=dojo
+      - MYSQL_USER=dojodbadmin
+      - MYSQL_PASSWORD=dbadminpass47kj235
+    volumes:
+      - $PWD/data/mysql:/var/lib/mysql
   insecureinc:
-    image: securecodingdojo/insecure.inc
+    image: mantisec/insecure.inc
     restart: "no" #change to always if you want the image to auto start
     ports:
       - "8080:8080"
     networks:
       - insecure
     environment:
-       - CHALLENGE_MASTER_SALT
+       - CHALLENGE_MASTER_SALT=supersecretmastersalt
 
   trainingportal:
-    image: securecodingdojo/trainingportal
+    image: mantisec/trainingportal
     restart: "no" #change to always if you want the image to auto start
     ports:
       - "8081:8081"
     volumes:
-       - "${DATA_DIR}:/dojofiles:consistent"
+       - "$PWD/build/trainingportal:/dojofiles"
     networks:
        - portal
     environment:
-       - CHALLENGE_MASTER_SALT
-       - ENC_KEY
-       - ENC_KEY_IV
+       - CHALLENGE_MASTER_SALT=supersecretmastersalt
+       - ENC_KEY=versatiledonkey
+       - ENC_KEY_IV=rabidporcupine
        - DATA_DIR=/dojofiles
 
 volumes:
