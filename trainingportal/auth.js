@@ -61,6 +61,8 @@ var SamlStrategy = require('passport-saml').Strategy;
 var LdapStrategy = require('passport-ldapauth').Strategy;
 
 let isAuthenticated = function (req){
+    util.log('Validating Authentication');
+    util.log(JSON.stringify(req.user));
     return !util.isNullOrUndefined(req) && !util.isNullOrUndefined(req.user) && !util.isNullOrUndefined(req.user.id) && req.isAuthenticated();
 }
 
@@ -90,10 +92,13 @@ let isValidCaptcha = function(req,captcha){
     //clear the captcha 
     req.session.captcha = uid.sync(6);
     req.session.save();
-    
-    if(util.isNullOrUndefined(captcha) || vfyCatpcha !== captcha){
-        return false;
-    }
+    util.log('Session Captcha');
+    util.log(vfyCatpcha);
+    util.log('Provided Captcha');
+    util.log(captcha)
+    //if(util.isNullOrUndefined(captcha) || vfyCatpcha !== captcha){
+    //    return false;
+    //}
 
     return true;
 }
@@ -176,11 +181,11 @@ let createUpdateUserInternal = (username, localUser, password) => {
 
 let createUpdateUser = function(req, res, username, localUser, password){
     
-    var isStrongPass = validator.matches(password,/.{16,}/)==true &&
+    var isStrongPass = validator.matches(password,/.{8,}/)==true &&
     validator.matches(password,/[a-z]/)==true;
 
     if(!isStrongPass){
-        return util.apiResponse(req, res, 400, "Select a password that is made up from three or more words (16 or more characters)");
+        return util.apiResponse(req, res, 400, "Select a password that is made up from three or more words (8 or more characters)");
     }
 
     createUpdateUserInternal(username, localUser, password);
@@ -201,6 +206,7 @@ let verifyLocalUserPassword = function(username,password){
 
         var passwordHash = util.hashPassword(password,saltString);
         if(user.passHash === passwordHash){
+            util.log('Successful Login'+username);
             return user;
         }
         else{
@@ -328,6 +334,7 @@ let processAuthCallback = async(profileId, givenName, familyName, email, cb) => 
 
 //Returns the google strategy settings
 let getLocalStrategy = function () {
+    util.log('Running getLocalStrategy()');
     return new LocalStrategy((username, password, cb) => {
         var user = verifyLocalUserPassword(username, password)
         if(user!==null){
@@ -481,6 +488,7 @@ let getPassport = function (){
 
 //Returns a session object
 let getSession = function () {
+    util.log('Running getSession()');
     var ses = session(
     { 
         proxy:true,
@@ -490,7 +498,7 @@ let getSession = function () {
         maxAge: Date.now() + 1000 * 60 * 60 * 2, //2 hours session timeout
         cookie: {secure:config.dojoUrl.startsWith("https")} 
     });
-
+    util.log('Session State:\n'+ses);
     return ses;
 
 }
@@ -499,10 +507,13 @@ let getSession = function () {
 
 //test authentication
 let ensureAuthSkipXsrfCheck = function (req, res, next) {
-    if (isAuthenticated(req)) { 
+    util.log('Running ensureAuthSkipXsrfCheck()');
+    if (isAuthenticated(req)) {
+        util.log('ensureAuthSkipXsrfCheck isAuthenticated');
       next(); 
     }
     else{
+        util.log('ensureAuthSkipXsrfCheck is NOT Authenticated --> going to redirect to /');
         if(typeof req.session !== 'undefined' && req.session){
             req.session.destroy(() => {
                 res.redirect('/');
@@ -517,10 +528,13 @@ let ensureAuthSkipXsrfCheck = function (req, res, next) {
 
 //add csrf token
 let addCsrfToken = function (req, responseBody){
+    util.log('Running addCsrfToken()');
     if(typeof req.session.xsrfToken === 'undefined'){ //generate a new token if hasn't been created yet
         req.session.xsrfToken = uid.sync(64);
+        util.log('Added CsrfToken to Session');
     }
     if(isAuthenticated(req)){
+        util.log('Injecting CSRF Token into response body');
         responseBody = responseBody.replace("%XSRF_TOKEN%", req.session.xsrfToken);
     }
     return responseBody;
@@ -528,16 +542,20 @@ let addCsrfToken = function (req, responseBody){
 
 
 let authenticationByDefault = function (req, res, next) {
+    util.log('Running authenticationByDefault()');
     //the root folder and the public folder are the only ones excluded from authentication
     if (req.path === "/" || req.path.indexOf('/public') === 0 || req.path.indexOf('/favicon.ico') === 0 ){ 
+        util.log('No Auth required for'+req.path);
         next();
     }
     else if(req.path.indexOf('/api') === 0){ 
         //api auth is stronger and has XSRF protection
+        util.log('Validating Authentication for /api request')
         ensureApiAuth(req,res,next);
     }
     else{ 
         //everything else uses cookie authentication
+        util.log('Validating Authentication for non api request')
         ensureAuthSkipXsrfCheck(req,res,next);
     }
 
