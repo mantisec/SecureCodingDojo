@@ -7,7 +7,9 @@
         "redTeam":"http://localhost:8080",
         "blueTeam":"http://localhost:8080"
     },
-    "disabledModules":[],
-    "playLinks" : {},
-    "localUsersPath" : "localUsers.json"
+        "localUsersPath" : "localUsers.json",
+        "dbHost" : "192.168.0.100",
+        "dbName" : "dojo",
+        "dbUser" : "dojodbadmin",
+        "encDbPass":"pXAYtxLP+Knd1JRAg51jC/GU2ABM3lhgI0B9AQC7Oyw="
 }

@@ -74,6 +74,7 @@
                       $scope.isSuccess = true;
                       username.value = newUser.username;
                       $scope.refresh('loginCaptchaImg');
+                      $('#registerModal').modal('hide');
                   }
                   else{
                       $scope.isError = true;
