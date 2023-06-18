@@ -79,6 +79,14 @@ body {
   font-weight: 400;
   font-size: 3.0rem;
 }
+.instructions {
+  border: 2px solid;
+  border-color: #00bc8c;
+  border-radius: 25px;
+  padding: 30px;
+  width: 80%;
+  font-family: monospace;
+}
 .no-padding {
   padding: 0px;
 }
@@ -141,23 +149,19 @@ body {
 </div>
 <div class="joiner"></div>
 <div id="goal" class="jumbotron jumbotron-fluid transparent section pt-5">
-  <div class="container-fluid">
+  <div class="container-fluid instructions">
     <h1 class="green-text">Goal</h1>
-    <p class="lead">You are not expected to have any knowledge of software security going in. All you need is programming knowledge.</p>
-
-    <p class="lead">After you complete the training you should have a good understanding of software security aspects. 
-      However only training by itself will not be sufficient to make your software secure. 
-      Safeguards such as changes to development processes and security tools will also be necessary. 
+    <p class="lead">In this interactive secure coding session we will walk through real world examples of code vulnerabilities.
+      <br>Some of the examples are quite trivial, some may have you scratching your head.
+      <br>Overall the goal is to increase our awareness and ensure that these bad patterns dont make thier way into our Code!
     </p>
 
-    <p class="lead">
-      The goal of the Dojo is to be the first step in your journey towards becoming 
-      a safer developer. 
-      It also aims to enact cultural changes and a secure mindset within organizations.
+    <p class="lead">These modules will help us to obtain an understanding of important principles required for designing secure software.
+      <br>Training, Awareness and organizational culture will help you and your teams deliver secure software which protects your organization and your customers.
+      <br>Keep in mind its also import to have safeguards included to development lifecycle, both in the form of security tools and processes.
     </p>
-
     <p class="lead">
-      The training is intended to be fun and easy to achieve. 
+      Last but not least, This training is intended to be fun and easy to achieve, no need for any fancy tools, Just your programming skills.
     </p>
 
     <p class="lead">
@@ -169,7 +173,7 @@ body {
 
 
 <div id="attacks-and-blocks" class="jumbotron jumbotron-fluid transparent section">
-  <div class="container-fluid">
+  <div class="container-fluid instructions">
 
     <h1 class="green-text">Attacks</h1>
 
@@ -180,7 +184,7 @@ body {
     <p class="lead">Thinking like an attacker will help you avoid vulnerabilities when designing software, a process known as 'Threat Modeling'.
         It will also help you test your code for vulnerabilities once the software has been built. </p>
 
-    <h1 class="green-text pt-3">Blocks</h1>
+    <h1 class="green-text pt-3">Defense</h1>
 
     <p class="lead">In martial arts you learn various blocking techniques. Each block defends against one or more types of attacks.</p>
     <p class="lead">In a similar way software can be defended through 'code blocks'. They are also more widely known as 'secure coding practices'. 
@@ -194,7 +198,7 @@ body {
 
 
 <div id="rules" class="jumbotron jumbotron-fluid transparent section">
-  <div class="container-fluid">
+  <div class="container-fluid instructions">
     <h1 class="green-text">Rules</h1>
     <p class="lead">Even when you are conducting security testing to find the security bugs so they can be fixed, 
         it has to be fully authorized. </p>
