@@ -10,17 +10,35 @@
   <link href="/public/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="/public/open-iconic/font/css/open-iconic-bootstrap.min.css" rel="stylesheet">
 
-
+<style>
+  .background-wallpaper {
+    background-image: linear-gradient(rgba(0,0,0,0.1),rgb(34 34 34)),url(accessdenied.png);
+    height: 95vh;
+  }
+  .alert-box{
+    text-align: center;
+    width: 50%;
+    margin-left: 25%;
+    border-color: #fff;
+    border-width: 2px;
+    border-radius: 5px;
+    border-style: solid;
+    font-family: monospace;
+    font-weight: 600;
+  }
+</style>
 </head>
 
 <body style="margin-top: 10px">
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" style="padding: 0px;">
   <a class="navbar-brand" href="/"><img src="/public/mantisec.png" height="60px"></a>
 </nav>
-<div class="container-fluid"> 
+<div class="container-fluid background-wallpaper">
   <br><br><br>
-    <div class="alert alert-danger" id="errorMessage">
-        The authentication process failed. Verify that the user name and password are correct or restart your browser.
+    <div class="alert alert-danger alert-box" id="errorMessage">
+        Authentication Failed.
+      <br>Verify that the Username and Password are correct.
+      <br><a href="/public/locallogin.html">Click Here to return to the Logon Page</a>
     </div>
 </div>
 

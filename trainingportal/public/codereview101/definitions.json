@@ -180,8 +180,8 @@
                 "lineToHighlight":8,
                 "question":"Which of the following code snippets prevents XSS through HTML Encoding?",
                 "snippets":[
-                    "snipXSS1.jsp",
-                    "snipXSS2.jsp"
+                    "snipXSS1.js",
+                    "snipXSS2.js"
                 ],
                 "answer":0,
                 "correctReasoning":"You're right! The code sample is neutralizing HTML markup.",
@@ -194,8 +194,8 @@
                 "lineToHighlight":4,
                 "question":"Both code samples use HTML Encoding but which one uses the correct encoding for the output context?",
                 "snippets":[
-                    "snipXSS3.jsp",
-                    "snipXSS4.jsp"
+                    "snipXSS3.js",
+                    "snipXSS4.js"
                 ],
                 "answer":0,
                 "correctReasoning":"You're right! The code sample is neutralizing the single quote as well.",
