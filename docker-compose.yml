@@ -8,10 +8,10 @@ services:
     ports:
       - "3306:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=ljkDGlasn47kj235
+      - MYSQL_ROOT_PASSWORD=changemerootpass
       - MYSQL_DATABASE=dojo
       - MYSQL_USER=dojodbadmin
-      - MYSQL_PASSWORD=dbadminpass47kj235
+      - MYSQL_PASSWORD=changemedojopass
     volumes:
       - $PWD/data/mysql:/var/lib/mysql
   insecureinc:
@@ -25,6 +25,8 @@ services:
        - CHALLENGE_MASTER_SALT=supersecretmastersalt
 
   trainingportal:
+    depends_on:
+      - training-mysql
     image: mantisec/trainingportal
     restart: "no" #change to always if you want the image to auto start
     ports:
@@ -38,6 +40,7 @@ services:
        - CHALLENGE_MASTER_SALT=supersecretmastersalt
        - ENC_KEY=versatiledonkey
        - ENC_KEY_IV=rabidporcupine
+       - DB_PASSWORD=changemedojopass
        - DATA_DIR=/dojofiles
 
 networks:
