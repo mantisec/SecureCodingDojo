@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secure-coding-portal-target
+  labels:
+    app: secure-coding-portal-target
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: secure-coding-portal-target
+  template:
+    metadata:
+      name: secure-coding-portal-target
+      labels:
+        app: secure-coding-portal-target
+    spec:
+      containers:
+        - name: secure-coding-portal-target
+          ports:
+            - containerPort: 8080
+          env:
+            - name: CHALLENGE_MASTER_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: secure-coding-portal
+                  key: challenge_master_salt
+          image: "{{ .Values.targetImage }}:{{ .Values.targetImageTag | default "latest" }}"
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: secure-coding-portal-target-svc
+spec:
+  selector:
+    app: secure-coding-portal-target
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: secure-coding-portal-target-ing
+  labels:
+    {{- include "secure-coding-portal.labels" . | nindent 4 }}
+  {{- with .Values.targetIngress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.targetIngress.tls }}
+  tls:
+    {{- range .Values.targetIngress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range .Values.targetIngress.hosts }}
+    - host: {{ .host }}
+      http:
+        paths:
+          - path: {{ .path }}
+            pathType: Prefix
+            backend:
+              service:
+                name: secure-coding-portal-target-svc
+                port:
+                  number: 80
+    {{- end }}

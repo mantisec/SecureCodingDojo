@@ -1,0 +1,164 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: secure-coding-portal-training-config
+  labels:
+    {{- include "secure-coding-portal.labels" . | nindent 4 }}
+data:
+  config.json: |
+    {
+        "dojoUrl" : "https://training.dojo.mantisec.com.au",
+        "moduleUrls" : {
+            "blackBelt":"https://target.dojo.mantisec.com.au",
+            "securityCodeReviewMaster":"/public/codereview101/?fromPortal",
+            "secondDegreeBlackBelt":  "https://target.dojo.mantisec.com.au",
+            "redTeam":  "https://target.dojo.mantisec.com.au",
+            "blueTeam": "https://target.dojo.mantisec.com.au"    
+        },
+        "localUsersPath" : "localUsers.json",
+        "dbHost" : "secure-coding-portal-mysql",
+        "dbName" : "secure-coding-portal-db",
+        "dbUser" : "secure-coding-portal-user"
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secure-coding-portal-training
+  labels:
+    {{- include "secure-coding-portal.labels" . | nindent 4 }}
+    app: secure-coding-portal-training
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: secure-coding-portal-training
+  template:
+    metadata:
+      name: secure-coding-portal-training
+      labels:
+        app: secure-coding-portal-training
+    spec:
+      containers:
+        - name: secure-coding-portal-training
+          ports:
+            - name: http
+              containerPort: 8081
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          env:
+            - name: CHALLENGE_MASTER_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: secure-coding-portal
+                  key: challenge_master_salt
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secure-coding-portal
+                  key: db_pass
+            - name: ENC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: secure-coding-portal
+                  key: enc_key
+            - name: ENC_KEY_IV
+              valueFrom:
+                secretKeyRef:
+                  name: secure-coding-portal
+                  key: enc_key_iv
+            - name: DATA_DIR
+              value: "/dojofiles"
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.portalImage }}:{{ .Values.portalImageTag | default "latest" }}"
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: local-users
+              mountPath: /dojofiles
+            - name: portal-config-volume
+              mountPath: /dojofiles/config.json
+              subPath: config.json
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      volumes:
+        - name: local-users
+          hostPath:
+            path: /opt/securecodingportal
+
+        - name: portal-config-volume
+          configMap:
+            items:
+              - key: config.json
+                path: config.json
+            name: secure-coding-portal-training-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: secure-coding-portal-training-svc
+  labels:
+    {{- include "secure-coding-portal.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: secure-coding-portal-training
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8081
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: secure-coding-portal-training-ing
+  labels:
+    {{- include "secure-coding-portal.labels" . | nindent 4 }}
+  {{- with .Values.portalIngress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.portalIngress.tls }}
+  tls:
+    {{- range .Values.portalIngress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range .Values.portalIngress.hosts }}
+    - host: {{ .host }}
+      http:
+        paths:
+          - path: {{ .path }}
+            pathType: Prefix
+            backend:
+              service:
+                name: secure-coding-portal-training-svc
+                port:
+                  number: 80
+    {{- end }}
