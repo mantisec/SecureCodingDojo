@@ -32,9 +32,9 @@ spec:
               name: secure-coding-portal
               key: db_pass
         - name: MYSQL_DATABASE
-          value: secure-coding-portal-db
+          value: scpdb
         - name: MYSQL_USER
-          value: secure-coding-portal-user
+          value: scpdbuser
         - name: MYSQL_PASSWORD
           valueFrom:
             secretKeyRef:

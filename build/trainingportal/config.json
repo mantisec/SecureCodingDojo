@@ -10,6 +10,5 @@
         "localUsersPath" : "localUsers.json",
         "dbHost" : "training-mysql",
         "dbName" : "dojo",
-        "dbUser" : "dojodbadmin",
-        "encDbPass":"pXAYtxLP+Knd1JRAg51jC/GU2ABM3lhgI0B9AQC7Oyw="
+        "dbUser" : "dojodbadmin"
 }

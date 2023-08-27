@@ -11,6 +11,8 @@ COPY *.DOCKER.zip /tmp
 RUN unzip -o /tmp/*.zip -d /home/node/app/
 RUN rm -f /tmp/*.zip
 COPY config.json /home/node/app/config.json
+RUN mkdir -p /home/node/data
+RUN chmod 755 -R /home/node/data
 WORKDIR /home/node/app
 
 RUN npm install

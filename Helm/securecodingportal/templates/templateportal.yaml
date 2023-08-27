@@ -18,8 +18,8 @@ data:
         },
         "localUsersPath" : "localUsers.json",
         "dbHost" : "secure-coding-portal-mysql",
-        "dbName" : "secure-coding-portal-db",
-        "dbUser" : "secure-coding-portal-user"
+        "dbName" : "scpdb",
+        "dbUser" : "scpdbuser"
     }
 ---
 apiVersion: apps/v1
@@ -64,27 +64,15 @@ spec:
                 secretKeyRef:
                   name: secure-coding-portal
                   key: db_pass
-            - name: ENC_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: secure-coding-portal
-                  key: enc_key
-            - name: ENC_KEY_IV
-              valueFrom:
-                secretKeyRef:
-                  name: secure-coding-portal
-                  key: enc_key_iv
             - name: DATA_DIR
-              value: "/dojofiles"
+              value: "/home/node/data"
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.portalImage }}:{{ .Values.portalImageTag | default "latest" }}"
           imagePullPolicy: Always
           volumeMounts:
-            - name: local-users
-              mountPath: /dojofiles
             - name: portal-config-volume
-              mountPath: /dojofiles/config.json
+              mountPath: /home/node/data/config.json
               subPath: config.json
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
@@ -102,10 +90,11 @@ spec:
       {{- end }}
 
       volumes:
-        - name: local-users
-          hostPath:
-            path: /opt/securecodingportal
+        - hostPath:
+            path: /opt/dojo/portal
+            type: ""
 
+          name: data
         - name: portal-config-volume
           configMap:
             items:

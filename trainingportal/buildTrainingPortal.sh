@@ -13,3 +13,4 @@ zip ../build/trainingportal/SCD-"$(date)".DOCKER.zip -rq *.js *.sql \
  -x "*.DS_Store" -x "encryptConfigs.js" -x "decrypt.js" -x "*.config.js" -x "config.json";
 
 docker build -t mantisec/trainingportal ../build/trainingportal/
+docker push mantisec/trainingportal

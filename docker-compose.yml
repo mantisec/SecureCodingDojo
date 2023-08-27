@@ -32,7 +32,7 @@ services:
     ports:
       - "8081:8081"
     volumes:
-       - "$PWD/build/trainingportal:/dojofiles"
+       - "$PWD/build/trainingportal:/tmp"
        - "$PWD/trainingportal/public:/home/node/app/public"
     networks:
        - portal
@@ -41,7 +41,7 @@ services:
        - ENC_KEY=versatiledonkey
        - ENC_KEY_IV=rabidporcupine
        - DB_PASSWORD=changemedojopass
-       - DATA_DIR=/dojofiles
+       - DATA_DIR=/tmp
 
 networks:
   portal:
