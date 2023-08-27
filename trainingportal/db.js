@@ -23,12 +23,18 @@ if(util.isNullOrUndefined(config.dbHost)){
   liteDB = new sqlite3.Database(dbPath);
 }
 else {
+  let db_pass = "";
+  if (process.env.DB_PASSWORD!=null){
+    db_pass = process.env.DB_PASSWORD;
+  } else {
+    db_pass = aesCrypto.decrypt(config.encDbPass);
+  }
   MYSQL_CONFIG = {
     connectionLimit:100,
     host: config.dbHost,
     database: config.dbName,
     user: config.dbUser,
-    password: aesCrypto.decrypt(config.encDbPass),
+    password: db_pass,
     multipleStatements:true
   };
 }
